@@ -11,14 +11,14 @@ while true; do
     do
         case $REPLY in
             1)  read -p "Enter Database name: " dbname
-                ./createdb $dbname
+                /home/$USER/project/scripts/createdb $dbname
                 break;;
-            2) ./lsdb 
+            2)  /home/$USER/project/scripts/lsdb 
                 break;;
-            3) ./conndb 
+            3) /home/$USER/project/scripts/conndb 
                 break;;
             4) read -p "Enter Database name: " dbname
-                ./dropdb $dbname
+                /home/$USER/project/scripts/dropdb $dbname
                 break;;
             *) exit
                 break 2
