@@ -3,8 +3,8 @@
 dbname=$1
 tableMenu(){
 
-    echo  $'\n' ----------------You are connected to $dbname database---------------- $'\n' 
-    echo "-------------------------------------------------------------------------"
+    echo "----------$(tput setaf 1)$(tput setab 7)You are connected to $dbname database$(tput sgr 0)----------"
+    echo "-----------------------------------------------------"
     select choice in "Create table" "List Tables" "Drop table" "Select table" "Insert into table" "Update table" "Delete from table" "Exit"
     do
         case $REPLY in

@@ -17,8 +17,7 @@ while true; do
                 break;;
             3) /home/$USER/project/scripts/checkdbExist.sh
                 break;;
-            4) read -p "Enter Database name: " dbname
-                /home/$USER/project/scripts/dropdb $dbname
+            4) /home/$USER/project/scripts/dropdb.sh $dbname
                 break;;
             *) exit
                 break 2

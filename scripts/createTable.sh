@@ -11,11 +11,7 @@ createTableFiles(){
         touch /home/$USER/project/databases/$dbname/"$tname.type"
         chmod a+wrx /home/$USER/project/databases/$dbname/$tname
         chmod a+wrx /home/$USER/project/databases/$dbname/"$tname.type"
-        echo "----------------------Table has been created successfully"----------------------
-
-    #else
-    #    echo Table name already exist, please enter another name
-    #   createTable $dbname $tname
+        echo "------$(tput setaf 1)$(tput setab 7)Table has been created successfully$(tput sgr 0)-----"
     fi
 
 }
@@ -31,23 +27,24 @@ setRecords(){
     do
 
         if [ $i -eq 0 ] ;then
-            echo "First column must be PRIMARY KEY."
+            echo "$(tput setaf 1)$(tput setab 7)First column must be PRIMARY KEY.$(tput sgr 0)"
+
         fi
         read -p "Enter Column Name #$((i+1)): " colName
         checkname=$(/home/$USER/project/scripts/chkname.sh $colName)
         if [ $checkname -eq 0 ] ;then
             select dtype in "int" "varchar"
             do
-                #echo "Choise the DataType number: "
                 colDType=$dtype
                 break
             done
         elif [ $checkname -eq 1 ] ;then
-            echo "Wrong Column name format."
+            cho "$(tput setaf 1)$(tput setab 7)Wrong Column name format.$(tput sgr 0)"
             setRecords $dbname $tname $colNum
             return 0
         elif [ $checkname -eq 2 ] ;then
-            echo "You didn't enter any thing, Please enter a name"
+            echo "$(tput setaf 1)$(tput setab 7)You didn't enter any thing, Please enter a name$(tput sgr 0)"
+
             setRecords $dbname $tname $colNum
             return 0
         fi
@@ -57,7 +54,6 @@ setRecords(){
             colDType="varchar"
         fi
         record+="${colName}:${colDType}\n"
-        #echo "record is: $record"
     done
         #create table files in case of all data is true only.
         createTableFiles $dbname $tname
@@ -76,26 +72,27 @@ tableFormat(){
     if [ $chkIsNum -eq 0 ] ;then
         setRecords $dbname $tname $colNum
     elif [ $chkIsNum -eq 1 ] ;then
-        echo "Please Enter Numbers only"
-        tableFormat $dbname $tname 
+        echo "$(tput setaf 1)$(tput setab 7)Please Enter Numbers only$(tput sgr 0)"
+        tableFormat $dbname $tname
+        return 0 
     elif [ $chkIsNum -eq 2 ] ;then
-        echo "You didn't enter any thing, Please enter a number"
-        tableFormat $dbname $tname 
-
+        echo "$(tput setaf 1)$(tput setab 7)You didn't enter any thing, Please enter a number$(tput sgr 0)"
+        tableFormat $dbname $tname
+        return 0 
     fi
 }
 
 createTable(){
     dbname=$1
-    echo  $'\n' ------------------------------Create Table------------------------------ $'\n' 
-    echo "-------------------------------------------------------------------------"
+    echo "----------$(tput setaf 1)$(tput setab 7)Create Table$(tput sgr 0)----------"
+    echo "-----------------------------------------------------"
     read -p "Enter table name: " tname
     checkname=$(/home/$USER/project/scripts/chkname.sh $tname)
     if [ $checkname -eq 0 ] ;then
         #check is this table name is already exist.
         #cat /home/$USER/project/scripts/databases/$dbname/$tname 2>/dev/null
         if [ -f /home/$USER/project/databases/$dbname/$tname ] ;then
-            echo "This table name is Exist..."
+            echo "$(tput setaf 1)$(tput setab 7)This table name is Exist...$(tput sgr 0)"
             createTable $dbname
             return 0
         else
@@ -104,11 +101,11 @@ createTable(){
         fi
         tableFormat $dbname $tname
     elif [ $checkname -eq 1 ] ;then
-        echo wrong table name format
+        echo "$(tput setaf 1)$(tput setab 7)wrong table name format$(tput sgr 0)"
         createTable $dbname
         return 0 
     elif [ $checkname -eq 2 ] ;then
-        echo "You didn't enter any thing, Please enter a name"
+        echo "$(tput setaf 1)$(tput setab 7)You didn't enter any thing, Please enter a name$(tput sgr 0)"
         createTable $dbname
         return 0
     fi
