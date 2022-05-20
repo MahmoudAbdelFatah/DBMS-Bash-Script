@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ "$(./chkname $1)" -eq 0 ] ;then
+if [ "$(./chkname.sh $1)" -eq 0 ] ;then
     if [ -f /home/$USER/project/databases/$1/$2 ] ;then
         read -p "Are you sure you want to delete table(y/n) "
         if [ $REPLY == 'y' ] || [ $REPLY == 'Y' ] ;then
@@ -8,5 +8,5 @@ if [ "$(./chkname $1)" -eq 0 ] ;then
         fi
     fi
 else
-    echo wronge name formate 
+    echo wrong name format
 fi
