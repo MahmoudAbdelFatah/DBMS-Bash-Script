@@ -7,15 +7,15 @@ fi
 while true; do
     echo  $'\n' welcome to our Database engine $'\n' 
     echo "-------------------------------------------------------------------------"
-    select choice in "Create Database" "List Databases" "Connect to Database" "Drop Database" exit
+    select choice in "Create Database" "List Databases" "Connect to Database" "Drop Database" "Exit"
     do
         case $REPLY in
             1)  read -p "Enter Database name: " dbname
-                /home/$USER/project/scripts/createdb $dbname
+                /home/$USER/project/scripts/createdb.sh $dbname
                 break;;
-            2)  /home/$USER/project/scripts/lsdb 
+            2)  /home/$USER/project/scripts/lsdb.sh
                 break;;
-            3) /home/$USER/project/scripts/conndb 
+            3) /home/$USER/project/scripts/checkdbExist.sh
                 break;;
             4) read -p "Enter Database name: " dbname
                 /home/$USER/project/scripts/dropdb $dbname

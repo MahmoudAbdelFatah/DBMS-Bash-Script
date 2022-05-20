@@ -11,26 +11,25 @@ createTableFiles(){
         touch /home/$USER/project/databases/$dbname/"$tname.type"
         chmod a+wrx /home/$USER/project/databases/$dbname/$tname
         chmod a+wrx /home/$USER/project/databases/$dbname/"$tname.type"
-        echo Table created successfully
-        #tableFormat $dbname $tname
         echo "----------------------Table has been created successfully"----------------------
 
-    else
-        echo Table name already exist, please enter another name
-        createTable $dbname $tname
+    #else
+    #    echo Table name already exist, please enter another name
+    #   createTable $dbname $tname
     fi
 
 }
 
-getRecords(){
+setRecords(){
     dbname=$1
     tname=$2
     colNum=$3
     i=0
-    record=""
-    colDType=""
+            record=""
+        colDType=""
     while [ $i -lt $colNum ] 
     do
+
         if [ $i -eq 0 ] ;then
             echo "First column must be PRIMARY KEY."
         fi
@@ -45,18 +44,27 @@ getRecords(){
             done
         elif [ $checkname -eq 1 ] ;then
             echo "Wrong Column name format."
-            getRecords $dbname $tname $colNum
+            setRecords $dbname $tname $colNum
+            return 0
         elif [ $checkname -eq 2 ] ;then
             echo "You didn't enter any thing, Please enter a name"
-            getRecords $dbname $tname $colNum
+            setRecords $dbname $tname $colNum
+            return 0
         fi
         i=$((i+1))
-                #if [ $i -eq $((colNum-1)) ] ;then
-        #fi
+        if [ -z $colDType ] ;then
+            #set column data type by default varchar if the user choosed wrong number 
+            colDType="varchar"
+        fi
+        record+="${colName}:${colDType}\n"
+        #echo "record is: $record"
     done
-    createTableFiles $dbname $tname
-    record="$colName:$DataType"
-    echo $record >> /home/$USER/project/databases/$dbname/"$tname.type"
+        #create table files in case of all data is true only.
+        createTableFiles $dbname $tname
+        #The \n escape sequence indicates a line feed. 
+        #Passing the -e argument to echo enables interpretation of escape sequences.
+        echo -e $record >> /home/$USER/project/databases/$dbname/"$tname.type"
+
 
 }
 
@@ -66,7 +74,7 @@ tableFormat(){
     read -p "Enter the number of columns: " colNum
     chkIsNum=$(/home/$USER/project/scripts/chkint.sh $colNum)
     if [ $chkIsNum -eq 0 ] ;then
-        getRecords $dbname $tname $colNum
+        setRecords $dbname $tname $colNum
     elif [ $chkIsNum -eq 1 ] ;then
         echo "Please Enter Numbers only"
         tableFormat $dbname $tname 
