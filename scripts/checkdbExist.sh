@@ -1,4 +1,4 @@
-
+#!/bin/bash
 read -p "Enter database name to connect it: " dbname
 
 cd /home/$USER/project/databases/$dbname 2> /dev/null
