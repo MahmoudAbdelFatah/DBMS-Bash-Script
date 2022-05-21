@@ -24,7 +24,9 @@ dropDB(){
                 echo "$(tput setaf 1)$(tput setab 7)Database $dbname is Exist$(tput sgr 0)"
                 confirmToDelDB $dbname
         else
-                echo "$(tput setaf 1)$(tput setab 7)Database $dbname wasn't found$(tput sgr 0)"
+            echo "$(tput setaf 1)$(tput setab 7)Database $dbname wasn't found$(tput sgr 0)"
+            dropDB
+            return
         fi
     elif [ $checkname -eq 1 ] ;then
         echo "$(tput setaf 1)$(tput setab 7)Wrong Database name format.$(tput sgr 0)"
