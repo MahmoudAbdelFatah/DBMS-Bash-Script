@@ -16,15 +16,25 @@ confirmToDelDB(){
     fi
 }
 
-read -p "Enter database name to delete it: " dbname
-cd /home/$USER/project/databases/$dbname 2> /dev/null
-if [ "$(/home/$USER/project/scripts/chkname.sh $dbname)" -eq 0 ] ;then
-    if [ $? -eq 0 ] ;then
-        echo "$(tput setaf 1)$(tput setab 7)Database $dbname is Exist$(tput sgr 0)"
-        confirmToDelDB $dbname
-    else
-        echo "$(tput setaf 1)$(tput setab 7)Database $dbname wasn't found$(tput sgr 0)"
+dropDB(){
+    read -p "Enter database name to delete it: " dbname
+    checkname=$(/home/$USER/project/scripts/chkname.sh $dbname)
+    if [ $checkname -eq 0 ] ;then
+        if [ -d /home/$USER/project/databases/$dbname ] ;then
+                echo "$(tput setaf 1)$(tput setab 7)Database $dbname is Exist$(tput sgr 0)"
+                confirmToDelDB $dbname
+        else
+                echo "$(tput setaf 1)$(tput setab 7)Database $dbname wasn't found$(tput sgr 0)"
+        fi
+    elif [ $checkname -eq 1 ] ;then
+        echo "$(tput setaf 1)$(tput setab 7)Wrong Database name format.$(tput sgr 0)"
+        dropDB
+        return 0
+    elif [ $checkname -eq 2 ] ;then
+        echo "$(tput setaf 1)$(tput setab 7)You didn't enter any thing, Please enter a name$(tput sgr 0)"
+        dropDB
+        return 0
     fi
-else
-    echo "Wrong Name Format"
-fi
+}
+
+dropDB
