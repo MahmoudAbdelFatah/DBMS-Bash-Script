@@ -20,7 +20,7 @@ tableMenu(){
             ;;
         4)  read -p "Enter Table Name: " tname
             ;;
-        5)  read -p "Enter Table Name: " tname
+        5)  /home/$USER/project/scripts/inserttb.sh $dbname
             ;;
         6)  read -p "Enter Table Name: " tname
             ;;
