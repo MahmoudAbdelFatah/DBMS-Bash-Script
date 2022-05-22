@@ -8,15 +8,20 @@ tableMenu(){
     select choice in "Create table" "List Tables" "Drop table" "Select table" "Insert into table" "Update table" "Delete from table" "Exit"
     do
         case $REPLY in
-        1)  /home/$USER/project/scripts/createTable.sh $dbname
-        tableMenu $dbname
-        return 0
+        1)  
+            /home/$USER/project/scripts/createTable.sh $dbname
+            tableMenu $dbname
+            return 0
             ;;
-        2)  /home/$USER/project/scripts/lstables.sh $dbname
-        tableMenu $dbname
-        return 0 
-            ;;
-        3)  read -p "Enter Table Name: " tname
+        2)  
+            /home/$USER/project/scripts/lstables.sh $dbname
+            tableMenu $dbname
+            return 0 
+                ;;
+        3)
+            /home/$USER/project/scripts/droptb.sh $dbname
+            tableMenu $dbname
+            return 0
             ;;
         4)  read -p "Enter Table Name: " tname
             ;;
