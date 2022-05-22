@@ -1,10 +1,10 @@
 #!/bin/bash
 
-createdb(){
+createdb() {
     read -p "Enter Database name: " dbname
     checkname=$(/home/$USER/project/scripts/chkname.sh $dbname)
-    if [ $checkname -eq 0 ] ;then
-        if [ ! -d /home/$USER/project/databases/$dbname ] ;then
+    if [ $checkname -eq 0 ]; then
+        if [ ! -d /home/$USER/project/databases/$dbname ]; then
             mkdir /home/$USER/project/databases/$dbname
             chmod 755 /home/$USER/project/databases/*
             echo "Database created succesfuly."
@@ -13,16 +13,16 @@ createdb(){
             createdb
             return
         fi
-    elif [ $checkname -eq 1 ] ;then
+    elif [ $checkname -eq 1 ]; then
         echo "Wrong Name format"
-        createdb 
-        return  
-    elif [ $checkname -eq 2 ] ;then
+        createdb
+        return
+    elif [ $checkname -eq 2 ]; then
         echo "You didn't enter any thing, Please enter a database name"
-        createdb 
+        createdb
         return
     fi
 
 }
 
-createdb 
+createdb
