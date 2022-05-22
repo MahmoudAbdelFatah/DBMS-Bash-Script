@@ -70,6 +70,7 @@ readData(){
     echo "$record" >> /home/$USER/project/databases/$dbname/$tname
     echo "write into  $tname data $record"
 }
+
 checktable(){
     dbname=$1
     read -p "Enter table name: " tname
@@ -83,14 +84,16 @@ checktable(){
             return 0
         else
             echo "$(tput setaf 1)$(tput setab 7)This table name doesn't Exist...$(tput sgr 0)"
-            checktable dbname
+            checktable $dbname
             return 0
         fi
     elif [ $checkname -eq 1 ] ;then
         echo "$(tput setaf 1)$(tput setab 7)wrong table name format$(tput sgr 0)"
+        checktable $dbname
         return 0 
     elif [ $checkname -eq 2 ] ;then
         echo "$(tput setaf 1)$(tput setab 7)You didn't enter any thing, Please enter a name$(tput sgr 0)"
+        checktable $dbname
         return 0
     fi
 

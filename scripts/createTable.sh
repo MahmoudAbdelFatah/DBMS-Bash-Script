@@ -9,8 +9,7 @@ createTableFiles(){
     if [ ! -f /home/$USER/project/databases/$dbname/$tname ] ;then
         touch /home/$USER/project/databases/$dbname/$tname
         touch /home/$USER/project/databases/$dbname/"$tname.type"
-        chmod a+wrx /home/$USER/project/databases/$dbname/$tname
-        chmod a+wrx /home/$USER/project/databases/$dbname/"$tname.type"
+        chmod 755 /home/$USER/project/databases/$dbname/*
         echo "------$(tput setaf 1)$(tput setab 7)Table has been created successfully$(tput sgr 0)-----"
     fi
 
