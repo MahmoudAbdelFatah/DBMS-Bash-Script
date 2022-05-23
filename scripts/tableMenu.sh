@@ -29,7 +29,7 @@ tableMenu(){
             ;;
         6)  read -p "Enter Table Name: " tname
             ;;
-        7) ;;
+        7) /home/$USER/project/scripts/deleteData.sh $dbname;;
         
         8) return 0
             ;;
