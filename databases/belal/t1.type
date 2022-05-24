@@ -1,0 +1,4 @@
+id:int
+name:varchar
+phone:int
+

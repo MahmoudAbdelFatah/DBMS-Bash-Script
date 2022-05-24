@@ -1,15 +1,18 @@
 #!/bin/bash
 
-checkname=$(/home/$USER/project/scripts/chkname.sh $1)
-if [ $checkname -eq 0 ] ;then
-    if [ ! -d /home/$USER/project/databases/$1 ] ;then
-        mkdir /home/$USER/project/databases/$1
-        echo Database created succesfuly
+
+read -p "Enter Database name: " dbname
+checkname=$(/home/$USER/project/scripts/chkname.sh $dbname)
+if [ $checkname -eq 0 ]; then
+    if [ ! -d /home/$USER/project/databases/$dbname ]; then
+        mkdir /home/$USER/project/databases/$dbname
+        chmod 755 /home/$USER/project/databases/*
+        echo "Database created succesfuly." >&2 
+        echo 0
     else
-        echo Database already exist
+        echo "Database already exist, please enter another name: " >&2
+        echo 1
     fi
-elif [ $checkname -eq 1 ] ;then
-    echo wrong name format
-elif [ $checkname -eq 2 ] ;then
-    echo "You didn't enter any thing, Please enter a database name"
+else
+    echo 1
 fi

@@ -1,23 +1,62 @@
 #!/bin/bash
+export scriptsPath=/home/$USER/project/scripts red="$(tput setaf 1)" end="$(tput sgr 0)" bg="$(tput setab 7)"
 
-if [ ! -d /home/$USER/project/databases ] ;then 
-                echo create new dbs directory
-                mkdir /home/$USER/project/databases
+
+if [ ! -d /home/$USER/project/databases ]; then
+    mkdir /home/$USER/project/databases
 fi
-dbMenu(){
-    echo  $'\n' welcome to our Database engine $'\n' 
-    echo "-------------------------------------------------------------------------"
-    select choice in "Create Database" "List Databases" "Connect to Database" "Drop Database" "Exit"
-    do
+dbMenu() {
+    echo $'\n' $red$bg welcome to our Database engine$end 
+    echo "-------------------------------------------------------------------------"$'\n'
+    select choice in "Create Database" "List Databases" "Connect to Database" "Drop Database" "Exit"; do
         case $REPLY in
-            1)  read -p "Enter Database name: " dbname
-                /home/$USER/project/scripts/createdb.sh $dbname ;;
-            2)  /home/$USER/project/scripts/lsdb.sh ;;
-            3) /home/$USER/project/scripts/checkdbExist.sh ;;
-            4) /home/$USER/project/scripts/dropdb.sh $dbname ;;
-            *) exit
-                break;
+        1)
+            create=$($scriptsPath/createdb.sh)
+            while true
+            do
+                if [ $create -eq 0 ]; then
+                    read -p "Do you want to create another DataBase (y/n) " answer
+                    answer=$(echo $answer | tr '[:upper:]' '[:lower:]')
+                    if [ $answer = "y" ] || [ $answer = "yes" ]; then
+                            create=$($scriptsPath/createdb.sh)
+                    elif [ $answer = "n" -o $answer = "no" ]; then
+                        break
+                    else
+                        echo "$red$bg please choose from this values (y/n).$end"
+                    fi
+                elif [ $create -eq 1 ]; then
+                    read -p "Do you want to create DataBase (y/n) " answer
+                    answer=$(echo $answer | tr '[:upper:]' '[:lower:]')
+                    if [ $answer = "y" ] || [ $answer = "yes" ]; then
+                            create=$($scriptsPath/createdb.sh)
+                    elif [ $answer = "n" -o $answer = "no" ]; then
+                        break
+                    else
+                        echo "$red$bg please choose from this values (y/n).$end"
+                    fi
+                fi
+            done
+            dbMenu
+            ;;
+        2)
+            $scriptsPath/lsdb.sh
+            dbMenu
+            ;;
+        3)
+            $scriptsPath/checkdbExist.sh
+            dbMenu
+            ;;
+        4)
+            /home/$USER/project/scripts/dropdb.sh $dbname
+            dbMenu
+            ;;
+        5)
+            exit
+            break
+            ;;
+        6)
+            echo "Please Enter a correct number"
         esac
     done
 }
- dbMenu
+dbMenu
