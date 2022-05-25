@@ -1,12 +1,9 @@
 #!/bin/bash
-#!/bin/bash
-dbname=$1
-path=/home/$USER/project/databases/$dbname
 
 deleteByColNum() {
     #delete using pk
     tname=$1
-    read -d ' ' -a colnames <<< "$( cut -d: -f1 $path/$tname.type )"
+    read -d ' ' -a colnames <<< "$( cut -d: -f1 $path/.$tname.type )"
     #get number of records in a file
     recordNums=$(wc -l <$path/$tname )
     #if the files is not empty
@@ -18,7 +15,7 @@ deleteByColNum() {
         if [ $check -eq 0 ]; then
             colExist=$(grep -c $colName <<< "${colnames[@]}")
             if [ $colExist -gt 0 ]; then
-                colType=$(grep -w $colName $path/$tname.type |cut -d: -f2)
+                colType=$(grep -w $colName $path/.$tname.type |cut -d: -f2)
                 
 
                 read -p "Enter a value of type $colType to delete: " delSearch
@@ -79,10 +76,10 @@ deleteByColNum() {
 deleteOneRecord() {
     #delete using pk
     tname=$1
-    read -d' ' -a coltypes <<< "$( cut -d: -f2 $path/$tname.type )"
+    read -d' ' -a coltypes <<< "$( cut -d: -f2 $path/.$tname.type )"
     #get number of records in a file
     recordNums=$(wc -l <$path/$tname)
-    colNums=$(wc -l <$path/$tname.type)
+    colNums=$(wc -l <$path/.$tname.type)
     echo "#row: $recordNums || #columns: $colNums"
     #if the files is not empty
     if [ $recordNums -gt 0 ] && [ $colNums -gt 0 ]; then
@@ -131,7 +128,7 @@ deleteAllRecords() {
     tname=$1
     #display columns name
     echo "$red$bg ALL RECORDS OF TABLE $tname$end"
-    colName=$(cut -d: -f1 $path/$tname.type | tr '\n' "\t")
+    colName=$(cut -d: -f1 $path/.$tname.type | tr '\n' "\t")
     echo -e "$red$colName$end"
     #confirm to delete
     read -p "Are you sure u want to delete all data of  $tname table ? (y/n) " answer

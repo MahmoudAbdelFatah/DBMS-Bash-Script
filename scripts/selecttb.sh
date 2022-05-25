@@ -1,39 +1,40 @@
 #!/bin/bash
-dbname=$1
-path=/home/$USER/project/databases/$dbname
-
 
 selectByColNum() {
     tname=$1
-    read -d ' ' -a colnames <<< "$( cut -d: -f1 $path/$tname.type )"
-    colNums=$(wc -l <$path/$tname.type)
+    colnames=($(cut -d: -f1 $path/.$tname.type))
+
+    #get number of records in a file
+    colNums=$(wc -l <$path/.$tname.type)
+    
     #get number of records in a file
     recordNums=$(wc -l <$path/$tname)
 
     #if the files is not empty
     if [ $recordNums -gt 0 ]; then
-        read -p "Enter the Column name: " colName
+        echo "The column names are: $red${colnames[@]}$end"
+        read -p "Enter the Column name from the columns above: " colName
         checkName=$($scriptsPath/chkname.sh $colName)
         if [ $checkName -eq 0 ]; then
-            colExist=$(grep -c $colName <<< "${colnames[@]}")
+            #<<< is meaning here string, take input as string
+            colExist=$(grep -cw $colName <<< "${colnames[@]}")
             if [ $colExist -gt 0 ]; then
-                colNum=$(awk -F: -v coln=$colName '{if(coln==$1) print NR }' $path/$tname.type)
+                colNum=$(awk -F: -v coln=$colName '{if(coln==$1) print NR }' $path/.$tname.type)
                 #go to line number n with sed and return it, then get the first field as the col name
-                colName=$(sed -n ${colNum}p $path/$tname.type | cut -d: -f1)
                 echo "$red$colName$end"
                 cut -d: -f$colNum $path/$tname
                 echo -e "-------------------------\n"
                 
             else
-                echo "$red Column doesn't Exist$end"
+                echo "${red}Column doesn't Exist$end"
             fi
         else
-            selectByColName $tname
+            selectByColNum $tname
             return
         fi
 
     else
-        echo "$red No records to select from them. Using inesert to add Records firstly...$end"
+        echo "${red}No records to select from them. Using inesert to add Records firstly...$end"
         return
     fi
 
@@ -42,18 +43,18 @@ selectByColNum() {
 selectOneRecord() {
     #select using pk
     tname=$1
-    colNums=$(wc -l <$path/$tname.type)
+    colNums=$(wc -l <$path/.$tname.type)
     #get number of records in a file to loop searching for PK
     recordNums=$(wc -l <$path/$tname)
 
     #if the files is not empty
     if [ $recordNums -gt 0 ]; then
         #get data type of first column as it is the PK column
-        colDtype=($(head -1 $path/$tname.type | cut -d: -f2))
+        colDtype=($(head -1 $path/.$tname.type | cut -d: -f2))
         read -p "Enter the PK of the column you want as a Data Type of $colDtype: " pkId
 
         #get all records to loop searching for PK input
-        records=($(cat $path/$tname))
+        records=$(cat $path/$tname)
         #loop on number of records to search for the input pk
         if [ $colDtype == 'int' ]; then
             check=$($scriptsPath/chkint.sh $pkId)
@@ -64,19 +65,18 @@ selectOneRecord() {
             #search for required PK
             isPk=$(grep -cw ^$pkId $path/$tname)
             if [ $isPk -eq 1 ]; then
-                colName=$(cut -d: -f1 $path/$tname.type | tr '\n' "\t")
+                colName=$(cut -d: -f1 $path/.$tname.type | tr '\n' "\t")
                 echo -e "$red$colName$end"
                 sed -n "/^$pkId/p" $path/$tname | tr ':' '\t' 
                 echo -e "-------------------------\n"
             else
-                echo "$red$bg There is no ID match your input $end"  
+                echo "${red}There is no ID match your input$end"  
             fi 
         else
-            echo "$red$bg Please enter data of type $colDtype$end"
-            deleteOneRecord $tname
+            selectOneRecord $tname
         fi
     else
-        echo "$red No records to select from them. Using inesert to add Records firstly...$end"
+        echo "${red}No records to select from them. Using inesert to add Records firstly...$end"
         return
     fi
 
@@ -84,10 +84,9 @@ selectOneRecord() {
 
 selectAllRecords() {
     tname=$1
-    echo "$red$bg ALL RECORDS OF TABLE $tname$end"
-    #TODO: display columns names before the data, it is an option
+    echo "$red${bg}ALL RECORDS OF TABLE $tname$end"
     #using tr to translate the delimiter of : to \t2
-    colName=$(cut -d: -f1 $path/$tname.type | tr '\n' "\t")
+    colName=$(cut -d: -f1 $path/.$tname.type | tr '\n' "\t")
     echo -e "$red$colName$end"
     records=$(cat $path/$tname | tr ':' '\t')
     echo -e "$records"
@@ -133,8 +132,8 @@ selecttb() {
             echo "$red$bg Table $tname is Exist$end"
             selectMenu $tname
         else
-            echo "$red$bg Table $tname wasn't found$end"
-            selecttb $dbname
+            echo "${red}Table $tname wasn't found$end"
+            selecttb
             return
         fi
     else

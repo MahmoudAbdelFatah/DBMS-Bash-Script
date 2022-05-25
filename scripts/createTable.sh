@@ -1,16 +1,14 @@
 #!/bin/bash
 
-dbname=$1
 colDType=""
 createTableFiles() {
-    dbname=$1
-    tname=$2
+    tname=$1
 
-    if [ ! -f /home/$USER/project/databases/$dbname/$tname ]; then
-        touch /home/$USER/project/databases/$dbname/$tname
-        touch /home/$USER/project/databases/$dbname/"$tname.type"
-        chmod 755 /home/$USER/project/databases/$dbname/*
-        echo "------$(tput setaf 1)$(tput setab 7)Table has been created successfully$(tput sgr 0)-----"
+    if [ ! -f $path/$tname ]; then
+        touch $path/$tname
+        touch $path/.$tname.type
+        chmod 755 $path/*
+        echo "------$red${bg}Table has been created successfully$end-----"
     fi
 
 }
@@ -41,10 +39,10 @@ checkUniqueColName() {
     i=$1
     records=$2
     if [ $i -eq 0 ]; then
-        echo "$(tput setaf 1)$(tput setab 7)First column must be PRIMARY KEY.$(tput sgr 0)"
+        echo "$red${bg}First column must be PRIMARY KEY.$end"
     fi
     read -p "Enter Column Name #$((i + 1)): " colName
-    checkname=$(/home/$USER/project/scripts/chkname.sh $colName)
+    checkname=$($scriptsPath/chkname.sh $colName)
     if [ $checkname -eq 0 ]; then
         if [ $i -gt 0 ]; then
             #check if the column name is unique.
@@ -56,90 +54,67 @@ checkUniqueColName() {
                     }
                 }')
             if [ ! -z $result ]; then
-                echo "$(tput setaf 1)$(tput setab 7)column name is not unique, please enter a different column name.$(tput sgr 0)"
+                echo "$red${bg}column name is not unique, please enter a different column name.$end"
                 checkUniqueColName $i $records
                 return
             fi
         fi
         selectDType
-    elif [ $checkname -eq 1 ]; then
-        echo "$(tput setaf 1)$(tput setab 7)Wrong Column name format.$(tput sgr 0)"
+    else
         checkUniqueColName $i $records
-        return 0
-    elif [ $checkname -eq 2 ]; then
-        echo "$(tput setaf 1)$(tput setab 7)You didn't enter any thing, Please enter a name$(tput sgr 0)"
-        checkUniqueColName $i $records
-        return 0
     fi
 }
 
 setRecords() {
-    dbname=$1
-    tname=$2
-    colNum=$3
+    tname=$1
+    colNum=$2
+
     i=0
     record=""
     colDType=""
     while [ $i -lt $colNum ]; do
-
         checkUniqueColName $i $record
         i=$((i + 1))
         record+="${colName}:${colDType}\n"
     done
     #create table files in case of all data is true only.
-    createTableFiles $dbname $tname
+    createTableFiles $tname
     #The \n escape sequence indicates a line feed.
     #Passing the -e argument to echo enables interpretation of escape sequences.
-    echo -e $record >>/home/$USER/project/databases/$dbname/"$tname.type"
+    echo -e $record >>$path/.$tname.type
 
 }
 
 tableFormat() {
-    dbname=$1
-    tname=$2
+    tname=$1
     read -p "Enter the number of columns: " colNum
-    chkIsNum=$(/home/$USER/project/scripts/chkint.sh $colNum)
+    chkIsNum=$($scriptsPath/chkint.sh $colNum)
     if [ $chkIsNum -eq 0 ]; then
-        setRecords $dbname $tname $colNum
-    elif [ $chkIsNum -eq 1 ]; then
-        echo "$(tput setaf 1)$(tput setab 7)Please Enter Numbers only$(tput sgr 0)"
-        tableFormat $dbname $tname
-        return 0
-    elif [ $chkIsNum -eq 2 ]; then
-        echo "$(tput setaf 1)$(tput setab 7)You didn't enter any thing, Please enter a number$(tput sgr 0)"
-        tableFormat $dbname $tname
-        return 0
+        setRecords $tname $colNum
+    else
+        tableFormat $tname
     fi
 }
 
 createTable() {
-    dbname=$1
-    echo "----------$(tput setaf 1)$(tput setab 7)Create Table$(tput sgr 0)----------"
-    echo "-----------------------------------------------------"
+    echo "----------$red${bg}Create Table$end----------"
     read -p "Enter table name: " tname
-    checkname=$(/home/$USER/project/scripts/chkname.sh $tname)
+    checkname=$($scriptsPath/chkname.sh $tname)
     if [ $checkname -eq 0 ]; then
         #check is this table name is already exist.
-        #cat /home/$USER/project/scripts/databases/$dbname/$tname 2>/dev/null
-        if [ -f /home/$USER/project/databases/$dbname/$tname ]; then
-            echo "$(tput setaf 1)$(tput setab 7)This table name is Exist...$(tput sgr 0)"
-            createTable $dbname
+        if [ -f $path/tname ]; then
+            echo "$red${bg}This table name is Exist...$end"
+            createTable
             return 0
         else
-            tableFormat $dbname $tname
+            tableFormat $tname
             return 0
         fi
-        tableFormat $dbname $tname
-    elif [ $checkname -eq 1 ]; then
-        echo "$(tput setaf 1)$(tput setab 7)wrong table name format$(tput sgr 0)"
-        createTable $dbname
-        return 0
-    elif [ $checkname -eq 2 ]; then
-        echo "$(tput setaf 1)$(tput setab 7)You didn't enter any thing, Please enter a name$(tput sgr 0)"
-        createTable $dbname
-        return 0
+        tableFormat $tname
+    else
+        createTable
     fi
 
 }
 
-createTable $dbname
+createTable 

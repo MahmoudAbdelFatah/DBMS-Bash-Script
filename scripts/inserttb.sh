@@ -1,100 +1,84 @@
 #!/bin/bash
 
 readData() {
-    dbname=$1
-    tname=$2
-    colnumber=$(wc -l </home/$USER/project/databases/$dbname/$tname.type)
-    colnames=($(cut -d: -f1 /home/$USER/project/databases/$dbname/$tname.type))
-    coltype=($(awk -F: '{print  $2}' /home/$USER/project/databases/$dbname/$tname.type))
+    tname=$1
+    colnumbers=$(wc -l <$path/.$tname.type)
+    colnames=($(cut -d: -f1 $path/.$tname.type))
+    coltype=($(awk -F: '{print  $2}' $path/.$tname.type))
 
     i=0
-    while [ $i -lt $((colnumber - 1)) ]; do
+    while [ $i -lt $((colnumbers - 1)) ]; do
         read -p "Enter the value of column ${colnames[$i]} with Data Type of ${coltype[$i]}: " data
         #when datatype is int
         if [ "${coltype[$i]}" == 'int' ]; then
-            chkIsNum=$(/home/$USER/project/scripts/chkint.sh $data)
+            chkIsNum=$($scriptsPath/chkint.sh $data)
             if [ $chkIsNum -eq 0 ]; then
                 #check PK in first column
                 if [ $i -eq 0 ]; then
-                    result=$(grep -c -w ^$data /home/$USER/project/databases/$dbname/$tname)
+                    result=$(grep -cw ^$data $path/$tname)
                     if [ $result -gt 0 ]; then
-                        echo "$(tput setaf 1)$(tput setab 7)Primary key is not unique, please enter a different Primary key.$(tput sgr 0)"
+                        echo "${red}Primary key is not unique, please enter a different Primary key.$end"
                         continue
                     fi
                 fi
                 #check if it's the last column
-                if [ $i -eq $((colnumber - 2)) ]; then
+                if [ $i -eq $((colnumbers - 2)) ]; then
                     record+="$data"
                 else
                     record+="$data:"
                 fi
                 i=$((i + 1))
 
-            elif [ $chkIsNum -eq 1 ]; then
-                echo "$(tput setaf 1)$(tput setab 7)Please Enter Numbers only$(tput sgr 0)"
-                continue
-            elif [ $chkIsNum -eq 2 ]; then
-                echo "$(tput setaf 1)$(tput setab 7)You didn't enter any thing, Please enter a number$(tput sgr 0)"
+            else
                 continue
             fi
         #when datatype is varchar
         else
-            checkname=$(/home/$USER/project/scripts/chkname.sh $data)
+            checkname=$($scriptsPath/chkname.sh $data)
             if [ $checkname -eq 0 ]; then
                 #check PK in first column
                 if [ $i -eq 0 ]; then
-                    result=$(grep -c -w ^$data /home/$USER/project/databases/$dbname/$tname)
+                    result=$(grep -c -w ^$data $path/$tname)
                     if [ $result -gt 0 ]; then
-                        echo "$(tput setaf 1)$(tput setab 7)Primary key is not unique, please enter a different Primary key.$(tput sgr 0)"
+                        echo "${red}Primary key is not unique, please enter a different Primary key$end"
                         continue
                     fi
                 fi
                 #check if it's the last column
-                if [ $i -eq $((colnumber - 2)) ]; then
+                if [ $i -eq $((colnumbers - 2)) ]; then
                     record+="$data"
                 else
                     record+="$data:"
                 fi
                 i=$((i + 1))
 
-            elif [ $checkname -eq 1 ]; then
-                echo "$(tput setaf 1)$(tput setab 7)wrong data format$(tput sgr 0)"
-                continue
-            elif [ $checkname -eq 2 ]; then
-                echo "$(tput setaf 1)$(tput setab 7)You didn't enter any thing, Please enter a name$(tput sgr 0)"
+            else
                 continue
             fi
         fi
     done
-    echo "$record" >>/home/$USER/project/databases/$dbname/$tname
+    echo "$record" >>$path/$tname
     echo "write into  $tname data $record"
 }
 
 checktable() {
-    dbname=$1
     read -p "Enter table name: " tname
-    checkname=$(/home/$USER/project/scripts/chkname.sh $tname)
+    checkname=$($scriptsPath/chkname.sh $tname)
     if [ $checkname -eq 0 ]; then
         #check is this table name is already exist.
-        if [ -f /home/$USER/project/databases/$dbname/$tname ]; then
-            echo "$(tput setaf 1)$(tput setab 7)This table name is Exist...$(tput sgr 0)"
-            readData $dbname $tname
-            return 0
+        if [ -f $path/$tname ]; then
+            echo "$red${bg}This table name is Exist...$end"
+            readData $tname
+            return
         else
-            echo "$(tput setaf 1)$(tput setab 7)This table name doesn't Exist...$(tput sgr 0)"
-            checktable $dbname
-            return 0
+            echo "${red}This table name doesn't Exist...$end"
+            checktable
+            return
         fi
-    elif [ $checkname -eq 1 ]; then
-        echo "$(tput setaf 1)$(tput setab 7)wrong table name format$(tput sgr 0)"
-        checktable $dbname
-        return 0
-    elif [ $checkname -eq 2 ]; then
-        echo "$(tput setaf 1)$(tput setab 7)You didn't enter any thing, Please enter a name$(tput sgr 0)"
-        checktable $dbname
-        return 0
+    else
+        checktable
     fi
 
 }
 
-checktable $1
+checktable

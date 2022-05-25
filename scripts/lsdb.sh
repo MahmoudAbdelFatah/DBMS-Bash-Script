@@ -1,9 +1,9 @@
 #!/bin/bash
 
-if [ -z "$(ls /home/$USER/project/databases)" ]; then
-    echo "----------$(tput setaf 1)$(tput setab 7)There is no Databases$(tput sgr 0)----------"
+if [ -z "$(ls $localdb)" ]; then
+    echo "----------${red}There is no Databases$end----------"
 
 else
-    echo "----------$(tput setaf 1)$(tput setab 7)List of Databases$(tput sgr 0)----------"
-    ls -l /home/$USER/project/databases
+    echo "----------$red${bg}List of Databases$end----------"
+    ls -l $localdb
 fi

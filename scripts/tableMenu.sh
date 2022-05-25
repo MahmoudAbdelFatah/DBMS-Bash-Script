@@ -1,6 +1,8 @@
 #!/bin/bash
 
 dbname=$1
+export path=$localdb/$dbname
+
 tableMenu() {
 
     echo "----------$red$bg You are connected to $dbname database$end----------"
@@ -8,35 +10,35 @@ tableMenu() {
     select choice in "Create table" "List Tables" "Drop table" "Select table" "Insert into table" "Update table" "Delete from table" "Exit"; do
         case $REPLY in
         1)
-            /home/$USER/project/scripts/createTable.sh $dbname
-            tableMenu $dbname
+            $scriptsPath/createTable.sh 
+            tableMenu 
             return 0
             ;;
         2)
-            /home/$USER/project/scripts/lstables.sh $dbname
-            tableMenu $dbname
+            $scriptsPath/lstables.sh 
+            tableMenu 
             return 0
             ;;
         3)
-            /home/$USER/project/scripts/droptb.sh $dbname
-            tableMenu $dbname
+            $scriptsPath/droptb.sh 
+            tableMenu 
             return 0
             ;;
         4)
-            /home/$USER/project/scripts/selecttb.sh $dbname
-            tableMenu $dbname
+            $scriptsPath/selecttb.sh 
+            tableMenu 
             return 0
             ;;
         5)
-            /home/$USER/project/scripts/inserttb.sh $dbname
-            tableMenu $dbname
+            $scriptsPath/inserttb.sh 
+            tableMenu 
             return 0
             ;;
         6)
             read -p "Enter Table Name: " tname
             ;;
-        7) /home/$USER/project/scripts/deleteData.sh $dbname
-            tableMenu $dbname
+        7) $scriptsPath/deleteData.sh 
+            tableMenu 
             return 0;;
         
         8) return 0
