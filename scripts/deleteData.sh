@@ -9,7 +9,7 @@ deleteByColNum() {
     #if the files is not empty
     if [ $recordNums -gt 0 ] && [ "${#colnames[@]}" -gt 0 ]; then
         #get data type of the spacified column 
-        echo "${colnames[@]}"
+        echo -e "columns of table are\n$red${bg}${colnames[@]}$end"
         read -p "Enter column name you want to delete with: " colName
         check=$($scriptsPath/chkname.sh $colName)
         if [ $check -eq 0 ]; then
@@ -26,7 +26,7 @@ deleteByColNum() {
                 fi
                 if [ $check -eq 0 ]; then
                     #search for required column and save new data without deleted items in file
-                    colNumber=$(awk -F: -v coln=$colName '{if(coln==$1) print NR }' $path/$tname.type)
+                    colNumber=$(awk -F: -v coln=$colName '{if(coln==$1) print NR }' $path/.$tname.type)
                     DataAfterDel=$(cat $path/$tname |awk -F: -v lncol=$colNumber -v word=$delSearch '{
                                                         if(word==$lncol)next;
                                                         else print $0;}')
@@ -49,7 +49,7 @@ deleteByColNum() {
                             deleteMenu $tname
                         else
                             echo "please choose from this values (y/n)."
-                            deleteAllRecords $tname
+                            deleteByColNum $tname
                             return 0
                         fi
                     else
