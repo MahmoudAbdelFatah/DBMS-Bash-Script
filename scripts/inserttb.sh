@@ -3,11 +3,12 @@
 readData() {
     tname=$1
     colnumbers=$(wc -l <$path/.$tname.type)
+    echo "num of col is: $colnumbers"
     colnames=($(cut -d: -f1 $path/.$tname.type))
     coltype=($(awk -F: '{print  $2}' $path/.$tname.type))
 
     i=0
-    while [ $i -lt $((colnumbers - 1)) ]; do
+    while [ $i -lt $((colnumbers)) ]; do
         read -p "Enter the value of column ${colnames[$i]} with Data Type of ${coltype[$i]}: " data
         #when datatype is int
         if [ "${coltype[$i]}" == 'int' ]; then
@@ -22,7 +23,7 @@ readData() {
                     fi
                 fi
                 #check if it's the last column
-                if [ $i -eq $((colnumbers - 2)) ]; then
+                if [ $i -eq $((colnumbers - 1)) ]; then
                     record+="$data"
                 else
                     record+="$data:"
@@ -34,7 +35,7 @@ readData() {
             fi
         #when datatype is varchar
         else
-            checkname=$($scriptsPath/chkname.sh $data)
+            checkname=$($scriptsPath/chkvarchar.sh $data)
             if [ $checkname -eq 0 ]; then
                 #check PK in first column
                 if [ $i -eq 0 ]; then
@@ -45,7 +46,7 @@ readData() {
                     fi
                 fi
                 #check if it's the last column
-                if [ $i -eq $((colnumbers - 2)) ]; then
+                if [ $i -eq $((colnumbers - 1)) ]; then
                     record+="$data"
                 else
                     record+="$data:"

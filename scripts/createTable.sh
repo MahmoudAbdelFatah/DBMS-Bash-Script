@@ -73,9 +73,13 @@ setRecords() {
     record=""
     colDType=""
     while [ $i -lt $colNum ]; do
-        checkUniqueColName $i $record
+        checkUniqueColName $i $record        
+        if [ $i -eq $(($colNum-1)) ] ;then
+            record+="${colName}:${colDType}"
+        else
+            record+="${colName}:${colDType}\n"
+        fi
         i=$((i + 1))
-        record+="${colName}:${colDType}\n"
     done
     #create table files in case of all data is true only.
     createTableFiles $tname
@@ -102,7 +106,7 @@ createTable() {
     checkname=$($scriptsPath/chkname.sh $tname)
     if [ $checkname -eq 0 ]; then
         #check is this table name is already exist.
-        if [ -f $path/tname ]; then
+        if [ -f $path/$tname ]; then
             echo "$red${bg}This table name is Exist...$end"
             createTable
             return 0

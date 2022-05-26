@@ -35,7 +35,9 @@ tableMenu() {
             return 0
             ;;
         6)
-            read -p "Enter Table Name: " tname
+            $scriptsPath/updatetb.sh 
+            tableMenu 
+            return 0
             ;;
         7) $scriptsPath/deleteData.sh 
             tableMenu 
