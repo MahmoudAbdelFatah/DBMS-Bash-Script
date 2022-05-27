@@ -94,7 +94,12 @@ tableFormat() {
     read -p "Enter the number of columns: " colNum
     chkIsNum=$($scriptsPath/chkint.sh $colNum)
     if [ $chkIsNum -eq 0 ]; then
-        setRecords $tname $colNum
+        if [ $colNum -gt 0 ]; then
+            setRecords $tname $colNum
+        else
+            echo "${red}Enter number bigger than 1${end}"
+            tableFormat $tname
+        fi
     else
         tableFormat $tname
     fi

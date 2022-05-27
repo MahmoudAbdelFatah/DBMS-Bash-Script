@@ -4,7 +4,7 @@
 if [ -z $1 ]; then
     echo "${red}You didn't enter any thing, Please enter a name$end" >&2
     echo 1
-elif [[ $1 =~ ^[a-zA-Z][a-zA-Z0-9_]+ ]]; then
+elif [[ $1 =~ ^[a-zA-Z][a-zA-Z0-9_]* ]]; then
     if [[ ! $1 =~ ['!@#$%^&*/\?()-;:.,<>{}،؛÷+']+ ]]; then
         echo 0
     else
