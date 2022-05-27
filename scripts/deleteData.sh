@@ -1,8 +1,8 @@
 #!/bin/bash
-confirmToDelete(){
+confirmToDelete() {
     answer=$1
     chechAnswer=$($scriptsPath/chkname.sh $answer)
-    if [ $chechAnswer -le 1 ] ;then
+    if [ $chechAnswer -le 1 ]; then
         answer=$(echo $answer | tr '[:upper:]' '[:lower:]')
         if [ $answer = "y" ] || [ $answer = "yes" ]; then
             echo 0
@@ -130,10 +130,10 @@ deleteAllRecords() {
     colName=$(cut -d: -f1 $path/.$tname.type | tr '\n' "\t")
     #confirm to delete
     read -p "Are you sure u want to delete all data of $tname table ? (y/n) " answer
-    confirm=$($confirmToDelete $answer)
+    confirm=$(confirmToDelete $answer)
     if [ $confirm -eq 0 ]; then
         recordNums=$(wc -l <$path/$tname)
-        echo "" >$path/$tname
+        echo -n "" >$path/$tname
         echo "$recordNums records was effected"
     else
         deleteAllRecords $tname

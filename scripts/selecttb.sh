@@ -17,6 +17,7 @@ selectByColNum() {
         checkName=$($scriptsPath/chkname.sh $colName)
         if [ $checkName -eq 0 ]; then
             #<<< is meaning here string, take input as string
+            #colExist=$(grep -cw $colName $path/.$tname.type) =
             colExist=$(grep -cw $colName <<< "${colnames[@]}")
             if [ $colExist -gt 0 ]; then
                 colNum=$(awk -F: -v coln=$colName '{if(coln==$1) print NR }' $path/.$tname.type)
@@ -59,7 +60,7 @@ selectOneRecord() {
         if [ $colDtype == 'int' ]; then
             check=$($scriptsPath/chkint.sh $pkId)
         else
-            check=$($scriptsPath/chkname.sh $pkId)
+            check=$($scriptsPath/chkvarchar.sh $pkId)
         fi
         if [ $check -eq 0 ]; then
             #search for required PK

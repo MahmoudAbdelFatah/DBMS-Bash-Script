@@ -2,7 +2,7 @@
 
 
 if [ $# -gt 1 ]; then
-    echo "${red}Name can't have space$end"
+    echo "${red}Input can't have space.$end" >&2
     echo 2
 elif [[ $1 =~ ^[0-9]+$ ]]; then
     echo 0

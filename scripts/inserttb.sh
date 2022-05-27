@@ -12,51 +12,34 @@ readData() {
         read -p "Enter the value of column ${colnames[$i]} with Data Type of ${coltype[$i]}: " data
         #when datatype is int
         if [ "${coltype[$i]}" == 'int' ]; then
-            chkIsNum=$($scriptsPath/chkint.sh $data)
-            if [ $chkIsNum -eq 0 ]; then
-                #check PK in first column
-                if [ $i -eq 0 ]; then
-                    result=$(grep -cw ^$data $path/$tname)
-                    if [ $result -gt 0 ]; then
-                        echo "${red}Primary key is not unique, please enter a different Primary key.$end"
-                        continue
-                    fi
-                fi
-                #check if it's the last column
-                if [ $i -eq $((colnumbers - 1)) ]; then
-                    record+="$data"
-                else
-                    record+="$data:"
-                fi
-                i=$((i + 1))
-
-            else
-                continue
-            fi
-        #when datatype is varchar
+            check=$($scriptsPath/chkint.sh $data)
         else
-            checkname=$($scriptsPath/chkvarchar.sh $data)
-            if [ $checkname -eq 0 ]; then
-                #check PK in first column
-                if [ $i -eq 0 ]; then
-                    result=$(grep -c -w ^$data $path/$tname)
-                    if [ $result -gt 0 ]; then
-                        echo "${red}Primary key is not unique, please enter a different Primary key$end"
-                        continue
-                    fi
-                fi
-                #check if it's the last column
-                if [ $i -eq $((colnumbers - 1)) ]; then
-                    record+="$data"
-                else
-                    record+="$data:"
-                fi
-                i=$((i + 1))
-
-            else
-                continue
-            fi
+            check=$($scriptsPath/chkvarchar.sh $data)
         fi
+        if [ $check -eq 1 -a $i -eq 0 ] ;then
+            continue
+        fi
+        if [ $check -lt 2 ]; then
+            #check PK in first column is unique
+            if [ $i -eq 0 ]; then
+                result=$(grep -cw ^$data $path/$tname)
+                if [ $result -gt 0 ]; then
+                    echo "${red}Primary key is not unique, please enter a different Primary key.$end"
+                    continue
+                fi
+            fi
+            #check if it's the last column
+            if [ $i -eq $((colnumbers - 1)) ]; then
+                record+="$data"
+            else
+                record+="$data:"
+            fi
+            i=$((i + 1))
+
+        else  
+            continue
+        fi
+      
     done
     echo "$record" >>$path/$tname
     echo "write into  $tname data $record"
@@ -79,7 +62,6 @@ checktable() {
     else
         checktable
     fi
-
 }
 
 checktable

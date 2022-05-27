@@ -8,7 +8,7 @@ createTableFiles() {
         touch $path/$tname
         touch $path/.$tname.type
         chmod 755 $path/*
-        echo "------$red${bg}Table has been created successfully$end-----"
+        echo -e "------$red${bg}Table has been created successfully$end-----\n"
     fi
 
 }

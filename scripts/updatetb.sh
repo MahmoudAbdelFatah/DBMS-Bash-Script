@@ -30,7 +30,7 @@ removeColumn() {
                 outputAfterDel=$(cut --complement -d: -f$lineNumber $path/$tname)
 
                 #redirect output of the undeleted columns to overwrite the file to store it
-                echo $outputAfterDel >$path/$tname
+                echo $outputAfterDel | tr " " "\n" >$path/$tname
 
                 echo "$red${bg}The column $colName is removed with its data Successfully.$end"
             elif [ $lineNumber -eq 1 ]; then
@@ -65,20 +65,16 @@ modifyDatatype() {
             #get the line number of column name which will delete it
             lineNumber=$(awk -F: -v coln=$colName '{if(coln==$1) print NR }' $path/.$tname.type)
             echo "column number is: $lineNumber"
-            if [ $lineNumber -ne 1 ]; then
-                #check datatype before modify
-                i=$((lineNumber - 1))
-                if [ "${coltype[$i]}" == 'int' ]; then
-                    echo "${red}You can't modify this column, you can't convert from int to varchar datatype$end"
-                else
-                    #update data type if its int to be varchar
-                    #FS contains the file delimiter, by default the space is used to concatenate
-                    getoutput=$(awk -F: -v coln=$lineNumber '{if(NR==coln)$2="int";}1' OFS=: $path/.$tname.type)
-                    echo "$getoutput" >$path/.$tname.type
-                    echo "$red${bg}The column $colName is modified the new datatype Successfully.$end"
-                fi
-            elif [ $lineNumber -eq 1 ]; then
-                echo "${red}The PK column can't be Modified.$end"
+            #check datatype before modify
+            i=$((lineNumber - 1))
+            if [ "${coltype[$i]}" != "int" ]; then
+                echo "${red}You can't modify this column, you can't convert from varchar to int datatype$end"
+            else
+                #update data type if its int to be varchar
+                #FS contains the file delimiter, by default the space is used to concatenate
+                getoutput=$(awk -F: -v coln=$lineNumber '{if(NR==coln)$2="varchar";}1' OFS=: $path/.$tname.type)
+                echo "$getoutput" >$path/.$tname.type
+                echo "$red${bg}The column $colName is modified the new datatype Successfully.$end"
             fi
         else
             echo "${red}There is no column with this name to modify its datatype.$end"
@@ -114,7 +110,7 @@ checkUniqueColName() {
     tname=$1
     colName=$2
     record=""
-    #calc number of words to check if the new column name is exirt already or not
+    #calc number of words to check if the new column name is exist already or not
     result=$(grep -cw ^$colName $path/.$tname.type)
     #echo "the result is: $result"
     if [ $result -gt 0 ]; then
@@ -125,7 +121,7 @@ checkUniqueColName() {
         record+="$colDType"
         echo -e "$record" >>$path/.$tname.type
         echo "$red${bg}the new column $colName with datatype of $colDType is added successfully.$end"
-        #should check the file is not empty
+        #should check the file is not empty to add : at the end of the file
         lineNumbers=$(wc -l <$path/$tname)
         if [ $lineNumbers -gt 0 ]; then
             sed 's/$/:/' -i $path/$tname

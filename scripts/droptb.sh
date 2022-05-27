@@ -7,7 +7,7 @@ confirmToDeltn() {
     if [ $answer = "y" -o $answer = "yes" ]; then
         rm $path/$tname
         rm $path/.$tname.type
-        echo "$red${bg}-----The Table $tname is Deleted.-----$end"
+        echo -e "$red${bg}-----The Table $tname is Deleted.-----$end\n"
     elif [ $answer = "n" -o $answer = "no" ]; then
         echo "$red${bg}sorry, we can't delete this table without your confirmation.$end"
     else

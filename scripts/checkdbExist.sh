@@ -5,7 +5,7 @@ checkDBExist() {
     checkname=$($scriptsPath/chkname.sh $dbname)
     if [ $checkname -eq 0 ] ;then
         if [ -d $localdb/$dbname ] ;then
-            echo "$red${bg}You are connected to $dbname Successfully$end"
+            echo -e "$red${bg}You are connected to $dbname Successfully$end\n"
             $scriptsPath/tableMenu.sh $dbname
         else
             echo "$red${bg}Database $dbname wasn't found$end"

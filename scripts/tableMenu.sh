@@ -39,13 +39,22 @@ tableMenu() {
             tableMenu 
             return 0
             ;;
-        7) $scriptsPath/deleteData.sh 
+        7) 
+            $scriptsPath/deleteData.sh 
             tableMenu 
-            return 0;;
-        8) $scriptsPath/updateData.sh 
+            return 0
+            ;;
+        8) 
+            $scriptsPath/updateData.sh 
             tableMenu
-            return 0;;
-        9) return 0
+            return 0   
+            ;;
+        9)  
+            return 0
+            ;;
+        *) 
+            tableMenu
+            return 0
             ;;
         esac
     done

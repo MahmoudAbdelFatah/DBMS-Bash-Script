@@ -31,12 +31,15 @@ dbMenu() {
                 elif [ $create -eq 1 ]; then
                     read -p "Do you still want to create a Database? (y/n) " answer
                     answer=$(echo $answer | tr '[:upper:]' '[:lower:]')
-                    if [ $answer = "y" ] || [ $answer = "yes" ]; then
-                            create=$($scriptsPath/createdb.sh)
-                    elif [ $answer = "n" -o $answer = "no" ]; then
-                        break
-                    else
-                        echo "$red$bg please choose from this values (y/n).$end"
+                    check=$($scriptsPath/chkname.sh $answer)
+                    if [ $check -eq 0 ]; then
+                        if [ $answer = "y" ] || [ $answer = "yes" ]; then
+                                create=$($scriptsPath/createdb.sh)
+                        elif [ $answer = "n" -o $answer = "no" ]; then
+                            break
+                        else
+                            echo "$red$bg please choose from this values (y/n).$end"
+                        fi
                     fi
                 fi
             done
@@ -55,7 +58,7 @@ dbMenu() {
             while true
             do
                 if [ $dropdb -eq 0 ]; then
-                    read -p "Do you want to Drop another Database? (y/n) " answer
+                    read -p "Do you want to Drop another Database? (y/n)? " answer
                     answer=$(echo $answer | tr '[:upper:]' '[:lower:]')
                     if [ $answer = "y" ] || [ $answer = "yes" ]; then
                             dropdb=$($scriptsPath/dropdb.sh)
@@ -65,14 +68,17 @@ dbMenu() {
                         echo "$red$bg please choose from this values (y/n).$end"
                     fi
                 elif [ $dropdb -eq 1 ]; then
-                    read -p "Do you still want to Drop a Database? (y/n) " answer
+                    read -p "Do you still want to Drop a Database? (y/n)? " answer
                     answer=$(echo $answer | tr '[:upper:]' '[:lower:]')
-                    if [ $answer = "y" ] || [ $answer = "yes" ]; then
-                            create=$($scriptsPath/dropdb.sh)
-                    elif [ $answer = "n" -o $answer = "no" ]; then
-                        break
-                    else
-                        echo "$red${bg}Please choose from this values (y/n).$end"
+                    check=$($scriptsPath/chkname.sh $answer)
+                    if  [ $check -eq 0 ]; then
+                        if [ $answer = "y" -o $answer = "yes" ]; then
+                                create=$($scriptsPath/dropdb.sh)
+                        elif [ $answer = "n" -o $answer = "no" ]; then
+                            break
+                        else
+                            echo "${red}Please choose from this values(y/n).$end"
+                        fi
                     fi
                 fi
             done
@@ -82,8 +88,10 @@ dbMenu() {
             exit
             break
             ;;
-        6)
-            echo "Please Enter a correct number"
+        *)
+            echo "please enter a number between 1-5"
+            dbMenu
+            ;;
         esac
     done
 }
