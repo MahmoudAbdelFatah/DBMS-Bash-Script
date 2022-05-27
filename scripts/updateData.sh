@@ -2,14 +2,15 @@
 
 modifyByColName() {
     tname=$1
-    read -d ' ' -a colnames <<< "$( cut -d: -f1 $path/.$tname.type )"
+    read -d ' ' -a colnames <<< "$( cut -d: -f1 $path/.$tname.type)"
     #get number of records in a file
-    recordNums=$(wc -l <$path/$tname )
+    recordNums=$(wc -l <$path/$tname)
+    echo "record number is : $recordNums"
     #if the files is not empty
     if [ $recordNums -gt 0 ]; then
         #get data type of the spacified column 
         echo -e "columns name : $red${bg}${colnames[@]}$end"
-        read -p "Enter column name you want to update in it: " colName
+        read -p "Enter column name you want to update it: " colName
         check=$($scriptsPath/chkname.sh $colName)
         if [ $check -eq 0 ]; then
             colExist=$(grep -c $colName <<< "${colnames[@]}")
@@ -20,9 +21,9 @@ modifyByColName() {
                 if [ $colType == 'int' ]; then
                     check=$($scriptsPath/chkint.sh $oldValue)
                 else
-                    check=$($scriptsPath/chkname.sh $oldValue)
+                    check=$($scriptsPath/chkvarchar.sh $oldValue)
                 fi
-                if [ $check -eq 0 ]; then        
+                if [ $check -lt 2 ]; then        
                     oldExist=($(cat $path/$tname |awk -F: -v lncol=$colNumber -v old=$oldValue '{
                                                             if(old!=$lncol)next;
                                                             else print $0;}'))
@@ -31,7 +32,7 @@ modifyByColName() {
                         if [ $colType == 'int' ]; then
                             check=$($scriptsPath/chkint.sh $newValue)
                         else
-                            check=$($scriptsPath/chkname.sh $newValue)
+                            check=$($scriptsPath/chkvarchar.sh $newValue)
                         fi
                         if [ $check -eq 0 ]; then
                             if [ $colNumber -eq 1 ]; then
@@ -47,24 +48,29 @@ modifyByColName() {
                             fi
                             # save updated data and wait to update it
                             dataAfterModify=$(awk -F: -v lncol=$colNumber -v new=$newValue -v old=$oldValue '{ $lncol = ($lncol==old ? new:$lncol)}1' OFS=: $path/$tname)
-                            read -p "Are you sure u want to update $colName: $newValue from  $tname table ? (y/n) " answer
-                            answer=$(echo $answer | tr '[:upper:]' '[:lower:]')
-                            if [ $answer = "y" ] || [ $answer = "yes" ]; then
-                                    echo  "$dataAfterModify" > $path/$tname
-                                echo "$red${bg}${#oldExist[@]} records was effected$end"
-                                ## we update the table succesfuly
+                            read -p "Are you sure u want to update $colName: $newValue from  $tname table? (y/n)" answer
+                            chechAnswer=$($scriptsPath/chkname.sh $answer)
+                            if [ $chechAnswer -eq 0 ] ;then
+                                answer=$(echo $answer | tr '[:upper:]' '[:lower:]')
+                                if [ $answer = "y" ] || [ $answer = "yes" ]; then
+                                        echo  "$dataAfterModify" > $path/$tname
+                                    echo "$red${bg}${#oldExist[@]} records was effected$end"
+                                    ## we update the table succesfuly
 
-                            elif [ $answer = "n" -o $answer = "no" ]; then
-                                echo "$red$bg sorry, we can't delete table's data without your confirmation.$end"
+                                elif [ $answer = "n" -o $answer = "no" ]; then
+                                    echo "$red$bg sorry, we can't delete table's data without your confirmation.$end"
+                                    modifyByColName $tname
+                                else
+                                    echo "${red}please choose from this values (y/n).$end"
+                                    modifyByColName $tname
+                                    return 0
+                                fi
+                            else 
                                 modifyByColName $tname
-                            else
-                                echo "${red}please choose from this values (y/n).$end"
-                                modifyByColName $tname
-                                return 0
                             fi 
                         fi
                     else
-                        echo "${red}There is no value match your input$end"
+                        echo "${red}There is no value match your input.$end"
                         modifyByColName $tname
                     fi
                 else
@@ -91,7 +97,7 @@ main()
     checktable=$($scriptsPath/chkname.sh $tname)
     if [ "$checktable" -eq 0 ];then
         if [ -f $path/$tname ] ;then
-            echo "$red$bg This table name is Exist...$end"
+            echo "$red${bg}This table name is Exist...$end"
             modifyByColName $tname
         else
             echo "$red$bg This table name doesn't Exist...$end"
