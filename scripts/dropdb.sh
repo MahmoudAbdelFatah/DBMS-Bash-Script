@@ -27,7 +27,7 @@ dropDB() {
         checkname=$($scriptsPath/chkname.sh $dbname)
         if [ $checkname -eq 0 ]; then
             if [ -d $localdb/$dbname ]; then
-                echo "${red}Database $dbname is Exist$end" >&2
+                echo "$bg${red}Database $dbname is Exist$end" >&2
                 checkConfirm=$(confirmToDelDB $dbname)
                 if [ $checkConfirm -eq 0 ] ;then
                     echo 0

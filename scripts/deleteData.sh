@@ -1,5 +1,20 @@
 #!/bin/bash
-
+confirmToDelete(){
+    answer=$1
+    chechAnswer=$($scriptsPath/chkname.sh $answer)
+    if [ $chechAnswer -le 1 ] ;then
+        answer=$(echo $answer | tr '[:upper:]' '[:lower:]')
+        if [ $answer = "y" ] || [ $answer = "yes" ]; then
+            echo 0
+        elif [ $answer = "n" -o $answer = "no" ]; then
+            echo "$red${bg}sorry, we can't delete table's data without your confirmation.$end" >&2
+            echo 1
+        else
+            echo "${red}please choose from this values (y/n).$end" >&2
+            echo 1
+        fi
+    fi
+}
 deleteByColName() {
     tname=$1
     read -d ' ' -a colnames <<<"$(cut -d: -f1 $path/.$tname.type)"
@@ -25,14 +40,14 @@ deleteByColName() {
                 if [ $check -eq 0 ]; then
                     #search for required column and save new data without deleted items in file
                     colNumber=$(awk -F: -v coln=$colName '{if(coln==$1) print NR }' $path/.$tname.type)
-                    DataAfterDel=($(cat $path/$tname | awk -F: -v lncol=$colNumber -v word=$delSearch '{
-                                                        if(word!=$lncol)next;
-                                                        else print $0;}'))
+                    DataAfterDel=($(awk -F: -v lncol=$colNumber -v word=$delSearch '{
+                                                        if(word==$lncol)next;
+                                                        else print $0;}' $path/$tname))
                     effectedRow=$(($recordNums - ${#DataAfterDel[@]}))
                     if [ $effectedRow -gt 0 ]; then
-                        read -p "Are you sure u want to delete $colName: $delSearch from  $tname table ? (y/n) " answer
-                        answer=$(echo $answer | tr '[:upper:]' '[:lower:]')
-                        if [ $answer = "y" ] || [ $answer = "yes" ]; then
+                        read -p "Are you sure u want to delete $colName: $delSearch from  $tname table ?(y/n)" answer
+                        confirm=$(confirmToDelete $answer)
+                        if [ $confirm -eq 0 ]; then
                             echo -n "" >$path/$tname
                             for i in "${DataAfterDel[@]}"; do
                                 echo $i >>$path/$tname
@@ -40,11 +55,7 @@ deleteByColName() {
                             echo "$red${bg}$effectedRow records was effected$end"
                             ## we update the table succesfuly
 
-                        elif [ $answer = "n" -o $answer = "no" ]; then
-                            echo "$red${bg}sorry, we can't delete table's data without your confirmation.$end"
-                            deleteMenu $tname
                         else
-                            echo "${red}please choose from this values (y/n).$end"
                             deleteByColName $tname
                             return 0
                         fi
@@ -91,15 +102,11 @@ deleteOneRecord() {
             isPk=$(grep -cw ^$pkId $path/$tname)
             if [ $isPk -eq 1 ]; then
                 read -p "Are you sure u want to delete id : $pkId of $tname table? (y/n) " answer
-                answer=$(echo $answer | tr '[:upper:]' '[:lower:]')
-                if [ $answer = "y" ] || [ $answer = "yes" ]; then
+                confirm=$(confirmToDelete $answer)
+                if [ $confirm -eq 0 ]; then
                     sed -i "/^$pkId/"'d' $path/$tname
                     echo "$red$bg 1 records was effected$end"
-                elif [ $answer = "n" -o $answer = "no" ]; then
-                    echo "$red$bg sorry, we can't delete table's data without your confirmation.$end"
-                    deleteMenu $tname
                 else
-                    echo "$red$bg please choose from this values (y/n).$end"
                     deleteOneRecord $tname
                     return 0
                 fi
@@ -123,16 +130,12 @@ deleteAllRecords() {
     colName=$(cut -d: -f1 $path/.$tname.type | tr '\n' "\t")
     #confirm to delete
     read -p "Are you sure u want to delete all data of $tname table ? (y/n) " answer
-    answer=$(echo $answer | tr '[:upper:]' '[:lower:]')
-    if [ $answer = "y" -o $answer = "yes" ]; then
+    confirm=$($confirmToDelete $answer)
+    if [ $confirm -eq 0 ]; then
         recordNums=$(wc -l <$path/$tname)
         echo "" >$path/$tname
         echo "$recordNums records was effected"
-    elif [ $answer = "n" -o $answer = "no" ]; then
-        echo "${red}sorry, we can't delete table's data without your confirmation.$end"
-        deleteMenu $tname
     else
-        echo "please choose from this values (y/n)."
         deleteAllRecords $tname
         return 0
     fi

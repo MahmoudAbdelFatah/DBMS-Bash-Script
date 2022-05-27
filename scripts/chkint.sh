@@ -1,7 +1,10 @@
 #!/bin/bash
 
-#check if lenth of string is zero
-if [[ $1 =~ ^[0-9]+$ ]]; then
+
+if [ $# -gt 1 ]; then
+    echo "${red}Name can't have space$end"
+    echo 2
+elif [[ $1 =~ ^[0-9]+$ ]]; then
     echo 0
 elif [ -z $1 ]; then
     echo "${red}You didn't enter any thing.$end" >&2

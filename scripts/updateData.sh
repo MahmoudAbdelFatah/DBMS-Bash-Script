@@ -1,5 +1,21 @@
 #!/bin/bash
 
+confirmToModify(){
+    answer=$1
+    chechAnswer=$($scriptsPath/chkname.sh $answer)
+    if [ $chechAnswer -le 1 ] ;then
+        answer=$(echo $answer | tr '[:upper:]' '[:lower:]')
+        if [ $answer = "y" -o $answer = "yes" ]; then
+            echo 0
+        elif [ $answer = "n" -o $answer = "no" ]; then
+            echo "$red${bg}sorry, we can't modify table's data without your confirmation.$end" >&2
+            echo 1
+        else
+            echo "${red}please choose from this values (y/n).$end" >&2
+            echo 1
+        fi
+    fi
+}
 modifyByColName() {
     tname=$1
     read -d ' ' -a colnames <<< "$( cut -d: -f1 $path/.$tname.type)"
@@ -49,25 +65,17 @@ modifyByColName() {
                             # save updated data and wait to update it
                             dataAfterModify=$(awk -F: -v lncol=$colNumber -v new=$newValue -v old=$oldValue '{ $lncol = ($lncol==old ? new:$lncol)}1' OFS=: $path/$tname)
                             read -p "Are you sure u want to update $colName: $newValue from  $tname table? (y/n)" answer
-                            chechAnswer=$($scriptsPath/chkname.sh $answer)
-                            if [ $chechAnswer -eq 0 ] ;then
-                                answer=$(echo $answer | tr '[:upper:]' '[:lower:]')
-                                if [ $answer = "y" ] || [ $answer = "yes" ]; then
-                                        echo  "$dataAfterModify" > $path/$tname
-                                    echo "$red${bg}${#oldExist[@]} records was effected$end"
-                                    ## we update the table succesfuly
+                            confirm=$(confirmToModify $answer)
+                            if [ $confirm -eq 0 ]; then
+                                echo  "$dataAfterModify" > $path/$tname
+                                echo "$red${bg}${#oldExist[@]} records was effected$end"
+                                ## we update the table succesfuly
 
-                                elif [ $answer = "n" -o $answer = "no" ]; then
-                                    echo "$red$bg sorry, we can't delete table's data without your confirmation.$end"
-                                    modifyByColName $tname
-                                else
-                                    echo "${red}please choose from this values (y/n).$end"
-                                    modifyByColName $tname
-                                    return 0
-                                fi
-                            else 
+                            else
                                 modifyByColName $tname
-                            fi 
+                                return 0
+                            fi
+                           
                         fi
                     else
                         echo "${red}There is no value match your input.$end"
