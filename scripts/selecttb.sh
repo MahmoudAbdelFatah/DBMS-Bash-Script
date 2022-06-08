@@ -16,16 +16,13 @@ selectByColNum() {
         read -p "Enter the Column name from the columns above: " colName
         checkName=$($scriptsPath/chkname.sh $colName)
         if [ $checkName -eq 0 ]; then
-            #<<< is meaning here string, take input as string
-            #colExist=$(grep -cw $colName $path/.$tname.type) =
-            colExist=$(grep -cw $colName <<< "${colnames[@]}")
+            colExist=$(grep -cw ^$colName $path/.$tname.type )
             if [ $colExist -gt 0 ]; then
                 colNum=$(awk -F: -v coln=$colName '{if(coln==$1) print NR }' $path/.$tname.type)
                 #go to line number n with sed and return it, then get the first field as the col name
                 echo "$red$colName$end"
                 cut -d: -f$colNum $path/$tname
                 echo -e "-------------------------\n"
-                
             else
                 echo "${red}Column doesn't Exist$end"
             fi
@@ -35,7 +32,7 @@ selectByColNum() {
         fi
 
     else
-        echo "${red}No records to select from them. Using inesert to add Records firstly...$end"
+        echo "${red}No records to select from them. Using insert to add Records firstly...$end"
         return
     fi
 

@@ -17,6 +17,7 @@ readData() {
             check=$($scriptsPath/chkvarchar.sh $data)
         fi
         if [ $check -eq 1 -a $i -eq 0 ] ;then
+            echo "${red}Primary Key can't be empty$end"
             continue
         fi
         if [ $check -lt 2 ]; then
@@ -42,7 +43,7 @@ readData() {
       
     done
     echo "$record" >>$path/$tname
-    echo "write into  $tname data $record"
+    echo "Succesfully added"
 }
 
 checktable() {

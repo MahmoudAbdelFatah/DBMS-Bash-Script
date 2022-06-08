@@ -5,7 +5,7 @@ export path=$localdb/$dbname
 chmod 755 $scriptsPath/*
 tableMenu() {
 
-    echo "----------$red$bg You are connected to $dbname database$end----------"
+    echo -e "\n----------$red$bg You are connected to $dbname database$end----------"
     echo "-----------------------------------------------------"
     select choice in "Create table" "List Tables" "Drop table" "Select table" "Insert into table" "Update table" "Delete from table" "Update table content" "Exit"; do
         case $REPLY in

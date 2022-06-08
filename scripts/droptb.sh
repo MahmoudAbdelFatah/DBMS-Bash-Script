@@ -26,7 +26,6 @@ droptb() {
             confirmToDeltn $tname
         else
             echo "${red}Table $tname wasn't found$end"
-            droptb
             return
         fi
     else

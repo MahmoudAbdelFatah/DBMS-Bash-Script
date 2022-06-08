@@ -32,8 +32,7 @@ dropDB() {
             fi
         else
             echo "${red}Database $dbname wasn't found$end" >&2
-            dropDB
-            return
+            echo 1
         fi
     else 
         echo 1

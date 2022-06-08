@@ -10,11 +10,11 @@ checkDBExist() {
         else
             echo "$red${bg}Database $dbname wasn't found$end"
             checkDBExist
-            return
+            return 0
         fi
     else
         checkDBExist
-        return
+        return 0
     fi
 }
 

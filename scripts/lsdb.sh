@@ -5,5 +5,5 @@ if [ -z "$(ls $localdb)" ]; then
 
 else
     echo "----------$red${bg}List of Databases$end----------"
-    ls -l $localdb
+    ls  $localdb
 fi
