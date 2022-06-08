@@ -148,8 +148,7 @@ modifyByPk() {
                 colType=$(grep -w ^$colName $path/.$tname.type | cut -d: -f2)
 #Get the PK for to determine row
                 read -p "Enter a value of type $pkType for the primary key: " pk
-                pkExist=$(chkPK $tname $pk $pkType)
-                
+                pkExist=$(chkPK $tname $pk $pkType) 
                 if [ $pkExist -eq 0 ]; then
 #Get the new value that will be added
                     read -p "Enter a value of type $colType you want to modify: " newValue

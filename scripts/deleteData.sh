@@ -31,7 +31,7 @@ deleteByColName() {
         read -p "Enter column name you want to delete with: " colName
         check=$($scriptsPath/chkname.sh $colName)
         if [ $check -eq 0 ]; then
-            colExist=$(grep -c ^$colName <<<"${colnames[@]}")
+            colExist=$(grep -c ^$colName $path/.$tname.type)
             if [ $colExist -gt 0 ]; then
                 colType=$(grep -w ^$colName $path/.$tname.type | cut -d: -f2)
                 colNumber=$(awk -F: -v coln=$colName '{if(coln==$1) print NR }' $path/.$tname.type)
@@ -134,15 +134,22 @@ deleteOneRecord() {
 deleteAllRecords() {
     tname=$1
     #confirm to delete
-    read -p "Are you sure u want to delete all data of $tname table ? (y/n) " answer
-    confirm=$(confirmToDelete $answer)
-    if [ $confirm -eq 0 ]; then
-        recordNums=$(wc -l <$path/$tname)
-        echo -n "" >$path/$tname
-        echo "$red ${bg}$recordNums records was effected$end"
+    recordNums=$(wc -l <$path/$tname)
+    #if the files is not empty
+    if [ $recordNums -gt 0 ]; then
+        read -p "Are you sure u want to delete all data of $tname table ? (y/n) " answer
+        confirm=$(confirmToDelete $answer)
+        if [ $confirm -eq 0 ]; then
+            recordNums=$(wc -l <$path/$tname)
+            echo -n "" >$path/$tname
+            echo "$red ${bg}$recordNums records was effected$end"
+        else
+            deleteAllRecords $tname
+            return 0
+        fi
     else
-        deleteAllRecords $tname
-        return 0
+        echo "$red No records to delete from them. Using insert to add Records firstly...$end"
+        return 
     fi
 }
 

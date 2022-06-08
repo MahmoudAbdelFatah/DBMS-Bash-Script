@@ -93,7 +93,7 @@ selectAllRecords() {
 
 selectMenu() {
     tname=$1
-    select reply in "Select All Records." "Select A Record." "Select By Column Number." "Exit"; do
+    select reply in "Select All Records." "Select A Record." "Select By Column Name." "Exit"; do
         case $REPLY in
         1)
             selectAllRecords $tname
